@@ -5,6 +5,7 @@
 #ifndef DATA_STRUCTURES_AND_ALGORITHMS_CHAINNODE_H
 #define DATA_STRUCTURES_AND_ALGORITHMS_CHAINNODE_H
 #include <iostream>
+#include "NativeExceptions.h"
 
 using  namespace std;
 
@@ -56,8 +57,8 @@ public:
     ~Chain();
     bool IsEmpty() const {return length == 0;}
     int Length() const { return  length;}
-    ChainNode<T>& GetFirst () const {return first;}
-    Find(int k, T& x) const;
+    ChainNode<T>& GetFirst () const {return *first;}
+    void Find(int k, T& x) const;
     int Search(const T& x) const;//homework 18
     Chain<T>& Delete(int k, T& x);
     Chain<T>& Insert(int k, const T&x);
@@ -69,6 +70,7 @@ public:
     void NotLoop(){last->link = 0;}
     Chain<T>& OrderInsert(const T&x);
     Chain<T>& Sum(const Chain<T>& x);
+    Chain<T>& Delete(T &x);
 private:
     ChainNode<T> *first;
     ChainNode<T> *last;
@@ -103,7 +105,7 @@ Chain<T>::~Chain() {
 }
 
 template <class T>
-Chain<T>::Find(int k, T &x) const {
+void Chain<T>::Find(int k, T &x) const {
     if(k<=0 || k>length)
         throw OutOfBounds();
     ChainNode<T> *current = first;
@@ -288,6 +290,20 @@ Chain<T>& Chain<T>::Sum(const Chain<T> &x) {
     }
 
     return *ret;
+}
+template <class T>
+Chain<T>& Chain<T>::Delete(T& x){
+    ChainNode<T> *current = first, *trail = 0;
+    while(current && current->data!=x){
+        trail=current;
+        current = current->link;
+    }
+    if(!current) throw BadInput();
+    x = current->data;//i this it's useless
+    if(trail) trail->link = current->link;
+    else first = current->link;
+    delete current;
+    return *this;
 }
 
 #endif //DATA_STRUCTURES_AND_ALGORITHMS_CHAINNODE_H
